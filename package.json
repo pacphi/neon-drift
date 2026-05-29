@@ -1,6 +1,8 @@
 {
   "name": "neon-drift",
   "version": "0.1.0",
+  "description": "A browser-based 3D synthwave kart racer (Three.js + Vite).",
+  "license": "MIT",
   "type": "module",
   "packageManager": "pnpm@11.2.2",
   "engines": {
