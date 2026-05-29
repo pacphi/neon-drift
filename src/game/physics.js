@@ -6,14 +6,16 @@ export function createKartState(pos = { x: 0, z: 0 }, heading = 0) {
 
 // signed speed along the kart's heading
 export function forwardSpeed(s) {
-  const fx = Math.sin(s.heading), fz = Math.cos(s.heading);
+  const fx = Math.sin(s.heading),
+    fz = Math.cos(s.heading);
   return s.vel.x * fx + s.vel.z * fz;
 }
 
 export function stepPhysics(s, input, dt, env = {}) {
   const offMul = env.offTrack ? P.offTrackMul : 1;
   const boost = env.boost ? P.boostMul : 1;
-  const fx = Math.sin(s.heading), fz = Math.cos(s.heading);
+  const fx = Math.sin(s.heading),
+    fz = Math.cos(s.heading);
 
   // longitudinal forces
   let fwd = s.vel.x * fx + s.vel.z * fz;
@@ -23,7 +25,8 @@ export function stepPhysics(s, input, dt, env = {}) {
     else fwd -= P.reverseAccel * input.brake * dt;
   }
   // friction (coast)
-  if (!input.throttle && !input.brake) fwd -= Math.sign(fwd) * Math.min(Math.abs(fwd), P.friction * dt);
+  if (!input.throttle && !input.brake)
+    fwd -= Math.sign(fwd) * Math.min(Math.abs(fwd), P.friction * dt);
 
   const maxF = P.maxSpeed * offMul * boost;
   fwd = Math.max(-P.maxReverse, Math.min(maxF, fwd));

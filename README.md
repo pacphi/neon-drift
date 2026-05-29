@@ -4,38 +4,60 @@ A browser-based 3D synthwave kart racer (Three.js + Vite). Glowing neon karts,
 a Tron grid floor, an 80s sunset sky with bloom, AI opponents, item pickups,
 lap/position/timing, and three progressively longer tracks. **MVP.**
 
+## Requirements
+
+- **Node >= 26**
+- **pnpm >= 11** (this repo enforces pnpm — `npm install` is blocked)
+
 ## Run
 
 ```bash
-npm install
-npm run dev      # play at the printed localhost URL
+pnpm install
+pnpm dev          # play at the printed localhost URL
 ```
 
 Build a static bundle:
 
 ```bash
-npm run build    # outputs dist/
-npm run preview  # serve the built bundle
+pnpm build        # outputs dist/
+pnpm preview      # serve the built bundle
 ```
 
-## Test
+## Scripts
 
-```bash
-npm test         # Vitest unit tests (physics, race/timing, items, track sampling)
-```
+| Command                   | Purpose                                                |
+| ------------------------- | ------------------------------------------------------ |
+| `pnpm dev` / `pnpm build` | Vite dev server / production build                     |
+| `pnpm test`               | Vitest unit tests (physics, race/timing, items, track) |
+| `pnpm e2e`                | Playwright smoke test (Firefox)                        |
+| `pnpm typecheck`          | TypeScript type-checks the JS (`checkJs`)              |
+| `pnpm lint` / `lint:fix`  | ESLint (flat config) — `:fix` autofixes                |
+| `pnpm format` / `:check`  | Prettier write / verify                                |
+| `pnpm audit` / `:fix`     | CVE audit / fix                                        |
+| `pnpm check`              | typecheck + lint + format:check + test (CI gate)       |
+| `pnpm fix`                | lint:fix + format                                      |
+| `pnpm deps:outdated`      | list outdated deps                                     |
+| `pnpm deps:update`        | upgrade within semver ranges (compatible)              |
+| `pnpm deps:update:latest` | upgrade to latest (may cross majors)                   |
+
+The Playwright e2e drives **Firefox**; fetch it once with
+`pnpm exec playwright install firefox`.
+
+CI (`.github/workflows/ci.yml`) runs the full `check` + `audit` + `build` and a
+Firefox e2e job on Node 26 / pnpm. Dependabot keeps deps and Actions current.
 
 ## Controls
 
 Press **L** in-game to toggle the controls legend.
 
-| Action          | Keyboard            | Mouse                       |
-|-----------------|---------------------|-----------------------------|
-| Steer           | ← → / A D           | move pointer (hold L-click) |
-| Throttle        | ↑ / W               | hold left-click             |
-| Brake / reverse | ↓ / S               | —                           |
-| Drift           | Space               | —                           |
-| Use item        | Shift / Ctrl        | right-click                 |
-| Pause           | Esc                 | —                           |
+| Action          | Keyboard     | Mouse                       |
+| --------------- | ------------ | --------------------------- |
+| Steer           | ← → / A D    | move pointer (hold L-click) |
+| Throttle        | ↑ / W        | hold left-click             |
+| Brake / reverse | ↓ / S        | —                           |
+| Drift           | Space        | —                           |
+| Use item        | Shift / Ctrl | right-click                 |
+| Pause           | Esc          | —                           |
 
 ## Gameplay
 

@@ -4,10 +4,14 @@ import { stepPhysics } from './physics.js';
 export function aiInput(kart, waypoints, race, opts = {}) {
   const st = kart.state;
   // find nearest waypoint
-  let best = 0, bd = Infinity;
+  let best = 0,
+    bd = Infinity;
   for (let i = 0; i < waypoints.length; i++) {
     const d = (waypoints[i].x - st.pos.x) ** 2 + (waypoints[i].z - st.pos.z) ** 2;
-    if (d < bd) { bd = d; best = i; }
+    if (d < bd) {
+      bd = d;
+      best = i;
+    }
   }
   const look = waypoints[(best + (opts.lookahead || 6)) % waypoints.length];
   const desired = Math.atan2(look.x - st.pos.x, look.z - st.pos.z);
@@ -23,8 +27,8 @@ export function aiInput(kart, waypoints, race, opts = {}) {
 
 // rubber-band: returns env.boost-ish speed multiplier nudge based on placement
 export function rubberBand(place, total) {
-  if (place === 0) return 0.96;             // leader slightly slower
-  return 1 + Math.min(0.12, place / total * 0.12); // trailing slightly faster
+  if (place === 0) return 0.96; // leader slightly slower
+  return 1 + Math.min(0.12, (place / total) * 0.12); // trailing slightly faster
 }
 
 export function stepAI(kart, waypoints, dt, env, opts) {

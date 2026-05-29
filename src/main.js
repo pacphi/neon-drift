@@ -18,22 +18,32 @@ scene.add(createGrid());
 const composer = createComposer(renderer, scene, camera);
 const input = createInput(window, renderer.domElement);
 const audio = createAudio();
-const hud = createHUD(); hud.show(false);
+const hud = createHUD();
+hud.show(false);
 
-let world = null, paused = false, finished = false;
-let countdown = 0, lastBeep = -99; // countdown > 0 freezes the sim until GO
+let world = null,
+  paused = false,
+  finished = false;
+let countdown = 0,
+  lastBeep = -99; // countdown > 0 freezes the sim until GO
 
 const pauseEl = document.createElement('div');
 pauseEl.textContent = 'PAUSED — press ESC to resume';
-pauseEl.style.cssText = 'position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(6,0,15,.6);color:#ff2bd6;font-family:"Courier New",monospace;font-size:32px;text-shadow:0 0 12px #ff2bd6;z-index:8;';
+pauseEl.style.cssText =
+  'position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(6,0,15,.6);color:#ff2bd6;font-family:"Courier New",monospace;font-size:32px;text-shadow:0 0 12px #ff2bd6;z-index:8;';
 document.body.appendChild(pauseEl);
 
 const cdEl = document.createElement('div');
-cdEl.style.cssText = 'position:fixed;inset:0;display:none;align-items:center;justify-content:center;color:#aaff00;font-family:"Courier New",monospace;font-size:140px;font-weight:bold;text-shadow:0 0 30px #aaff00;z-index:9;pointer-events:none;';
+cdEl.style.cssText =
+  'position:fixed;inset:0;display:none;align-items:center;justify-content:center;color:#aaff00;font-family:"Courier New",monospace;font-size:140px;font-weight:bold;text-shadow:0 0 30px #aaff00;z-index:9;pointer-events:none;';
 document.body.appendChild(cdEl);
 
 let goTimer = 0; // seconds the "GO!" banner stays up after countdown ends
-function startCountdown() { countdown = 3.0; lastBeep = -99; goTimer = 0; } // shows 3, 2, 1, GO
+function startCountdown() {
+  countdown = 3.0;
+  lastBeep = -99;
+  goTimer = 0;
+} // shows 3, 2, 1, GO
 
 const loop = createLoop(
   (dt) => {
@@ -44,8 +54,12 @@ const loop = createLoop(
     if (inp.pause) {
       paused = !paused;
       pauseEl.style.display = paused ? 'flex' : 'none';
-      if (paused) { audio.suspend(); }
-      else { audio.resume(); startCountdown(); } // re-countdown on resume
+      if (paused) {
+        audio.suspend();
+      } else {
+        audio.resume();
+        startCountdown();
+      } // re-countdown on resume
     }
     if (paused) return; // frozen: keep rendering the last frame, skip simulation
 
@@ -53,11 +67,19 @@ const loop = createLoop(
     if (countdown > 0) {
       countdown -= dt;
       const n = Math.max(1, Math.ceil(countdown));
-      if (n !== lastBeep) { lastBeep = n; audio.beep(); }
+      if (n !== lastBeep) {
+        lastBeep = n;
+        audio.beep();
+      }
       cdEl.style.display = 'flex';
       cdEl.textContent = String(n);
       follow(world.player.state, dt); // keep camera framed during countdown
-      if (countdown <= 0) { countdown = 0; goTimer = 0.9; audio.go(); cdEl.textContent = 'GO!'; }
+      if (countdown <= 0) {
+        countdown = 0;
+        goTimer = 0.9;
+        audio.go();
+        cdEl.textContent = 'GO!';
+      }
       return; // sim stays frozen until GO
     }
     // "GO!" banner shows briefly while the race is already running, then hides
@@ -72,8 +94,10 @@ const loop = createLoop(
     follow(world.player.state, dt);
     const pr = world.race.racers.player;
     hud.update({
-      lap: pr.lap, laps: world.race.laps,
-      place: world.place(world.player), total: RACE.racerCount,
+      lap: pr.lap,
+      laps: world.race.laps,
+      place: world.place(world.player),
+      total: RACE.racerCount,
       time: world.race.time,
       curLap: world.race.time - pr.lastLapStart,
       bestLap: pr.bestLap,
@@ -89,18 +113,26 @@ loop.start();
 
 async function endRace() {
   const order = world.results();
-  hud.show(false); audio.stopEngine();
-  paused = false; pauseEl.style.display = 'none';
-  countdown = 0; goTimer = 0; cdEl.style.display = 'none';
-  world.dispose(); world = null; finished = false;
+  hud.show(false);
+  audio.stopEngine();
+  paused = false;
+  pauseEl.style.display = 'none';
+  countdown = 0;
+  goTimer = 0;
+  cdEl.style.display = 'none';
+  world.dispose();
+  world = null;
+  finished = false;
   await resultsScreen(order);
   startFlow();
 }
 
 async function startFlow() {
   const idx = await trackSelect();
-  audio.resume(); audio.startEngine();
-  paused = false; pauseEl.style.display = 'none';
+  audio.resume();
+  audio.startEngine();
+  paused = false;
+  pauseEl.style.display = 'none';
   world = createWorld(scene, TRACKS[idx]);
   resetCamera();
   hud.show(true);
@@ -108,7 +140,7 @@ async function startFlow() {
 }
 
 // debug probe (read-only) for verifying controls during development
-window.__player = () => (world ? { ...world.player.state } : null);
+/** @type {any} */ (window).__player = () => (world ? { ...world.player.state } : null);
 
 // During dev, force a full reload on any hot update so game loops / listeners
 // never stack across edits (HMR state preservation is useless for a game loop).

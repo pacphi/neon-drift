@@ -5,7 +5,8 @@ function fmt(t) {
 
 export function createHUD(root = document.body) {
   const el = document.createElement('div');
-  el.style.cssText = 'position:fixed;inset:0;pointer-events:none;font-family:"Courier New",monospace;text-shadow:0 0 8px currentColor;';
+  el.style.cssText =
+    'position:fixed;inset:0;pointer-events:none;font-family:"Courier New",monospace;text-shadow:0 0 8px currentColor;';
   el.innerHTML = `
     <div id="lap"  style="position:absolute;top:14px;left:18px;color:#18f0ff;font-size:28px;"></div>
     <div id="pos"  style="position:absolute;top:14px;right:18px;color:#ff2bd6;font-size:28px;"></div>
@@ -15,11 +16,12 @@ export function createHUD(root = document.body) {
     <div id="item" style="position:absolute;bottom:18px;left:24px;color:#fff;font-size:20px;border:2px solid #ff2bd6;padding:6px 12px;min-width:120px;text-align:center;line-height:1.3;"></div>
     <div id="hint" style="position:absolute;bottom:18px;left:50%;transform:translateX(-50%);color:#7a18ff;font-size:13px;opacity:.8;">[L] CONTROLS</div>`;
   root.appendChild(el);
-  const $ = id => el.querySelector('#' + id);
+  const $ = (id) => el.querySelector('#' + id);
 
   // Controls legend overlay, toggled with the L key.
   const legend = document.createElement('div');
-  legend.style.cssText = 'position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(6,0,15,.8);color:#18f0ff;font-family:"Courier New",monospace;z-index:9;pointer-events:none;';
+  legend.style.cssText =
+    'position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(6,0,15,.8);color:#18f0ff;font-family:"Courier New",monospace;z-index:9;pointer-events:none;';
   legend.innerHTML = `
     <div style="border:2px solid #ff2bd6;padding:26px 40px;text-shadow:0 0 8px currentColor;line-height:2;">
       <div style="color:#ff2bd6;font-size:26px;margin-bottom:10px;">CONTROLS</div>
@@ -32,22 +34,32 @@ export function createHUD(root = document.body) {
     </div>`;
   root.appendChild(legend);
   let legendOn = false;
-  const setLegend = (on) => { legendOn = on; legend.style.display = on ? 'flex' : 'none'; };
+  const setLegend = (on) => {
+    legendOn = on;
+    legend.style.display = on ? 'flex' : 'none';
+  };
 
   return {
     update({ lap, laps, place, total, time, curLap, bestLap, timeLeft, speed, item }) {
       $('lap').textContent = `LAP ${Math.min(lap + 1, laps)}/${laps}`;
       $('pos').textContent = `${place}/${total}`;
-      $('time').innerHTML =
-        `TOTAL ${fmt(time)}<br>THIS LAP ${fmt(curLap)}<br>BEST ${fmt(bestLap)}`;
+      $('time').innerHTML = `TOTAL ${fmt(time)}<br>THIS LAP ${fmt(curLap)}<br>BEST ${fmt(bestLap)}`;
       $('left').innerHTML = `TIME LEFT<br>${fmt(timeLeft)}`;
       $('spd').textContent = Math.round(speed * 3.6) + ' km/h';
       $('item').innerHTML = item
         ? `${item.toUpperCase()}<br><span style="font-size:12px;color:#aaff00;">SHIFT / R-CLICK</span>`
         : 'NO ITEM';
     },
-    toggleLegend() { setLegend(!legendOn); },
-    show(v) { el.style.display = v ? 'block' : 'none'; if (!v) setLegend(false); },
-    destroy() { el.remove(); legend.remove(); },
+    toggleLegend() {
+      setLegend(!legendOn);
+    },
+    show(v) {
+      el.style.display = v ? 'block' : 'none';
+      if (!v) setLegend(false);
+    },
+    destroy() {
+      el.remove();
+      legend.remove();
+    },
   };
 }

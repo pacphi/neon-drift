@@ -2,7 +2,12 @@
 import { describe, it, expect } from 'vitest';
 import { sampleLoop } from '../src/game/track.js';
 
-const square = [{ x: -10, z: -10 }, { x: 10, z: -10 }, { x: 10, z: 10 }, { x: -10, z: 10 }];
+const square = [
+  { x: -10, z: -10 },
+  { x: 10, z: -10 },
+  { x: 10, z: 10 },
+  { x: -10, z: 10 },
+];
 
 describe('track sampling', () => {
   it('returns the requested number of waypoints', () => {
@@ -16,7 +21,10 @@ describe('track sampling', () => {
   });
   it('consecutive waypoints are roughly evenly spaced', () => {
     const wp = sampleLoop(square, 64);
-    const gaps = wp.map((p, i) => { const n = wp[(i + 1) % wp.length]; return Math.hypot(n.x - p.x, n.z - p.z); });
+    const gaps = wp.map((p, i) => {
+      const n = wp[(i + 1) % wp.length];
+      return Math.hypot(n.x - p.x, n.z - p.z);
+    });
     const avg = gaps.reduce((a, b) => a + b, 0) / gaps.length;
     for (const g of gaps) expect(Math.abs(g - avg)).toBeLessThan(avg * 0.6);
   });

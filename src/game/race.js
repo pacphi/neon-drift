@@ -4,9 +4,15 @@ export function createRace(racers, { checkpointCount, laps, maxTime = Infinity }
   const map = {};
   for (const r of racers) {
     map[r.id] = {
-      id: r.id, lap: 0, nextCp: 1 % checkpointCount, cpHits: 0,
-      finished: false, finishTime: null,
-      lapTimes: [], lastLapStart: 0, bestLap: null,
+      id: r.id,
+      lap: 0,
+      nextCp: 1 % checkpointCount,
+      cpHits: 0,
+      finished: false,
+      finishTime: null,
+      lapTimes: [],
+      lastLapStart: 0,
+      bestLap: null,
     };
   }
   return { racers: map, checkpointCount, laps, maxTime, time: 0 };
@@ -25,28 +31,41 @@ export function passCheckpoint(race, id, cp) {
     if (r.bestLap === null || lapTime < r.bestLap) r.bestLap = lapTime;
     r.lastLapStart = race.time;
     r.lap++;
-    if (r.lap >= race.laps) { r.finished = true; r.finishTime = race.time; }
+    if (r.lap >= race.laps) {
+      r.finished = true;
+      r.finishTime = race.time;
+    }
   }
   r.nextCp = (cp + 1) % race.checkpointCount;
   return race;
 }
 
 // progress score for sorting: laps dominate, then checkpoints hit
-function progress(r) { return r.lap * 1e6 + r.cpHits; }
+function progress(r) {
+  return r.lap * 1e6 + r.cpHits;
+}
 
 // Standings: finished racers first (by finish time), then the rest by progress.
 export function standings(race) {
-  return Object.values(race.racers).slice().sort((a, b) => {
-    if (a.finished && b.finished) return a.finishTime - b.finishTime;
-    if (a.finished) return -1;
-    if (b.finished) return 1;
-    return progress(b) - progress(a);
-  });
+  return Object.values(race.racers)
+    .slice()
+    .sort((a, b) => {
+      if (a.finished && b.finished) return a.finishTime - b.finishTime;
+      if (a.finished) return -1;
+      if (b.finished) return 1;
+      return progress(b) - progress(a);
+    });
 }
 
-export function isFinished(race, id) { return !!race.racers[id]?.finished; }
-export function allFinished(race) { return Object.values(race.racers).every(r => r.finished); }
-export function timedOut(race) { return race.time >= race.maxTime; }
+export function isFinished(race, id) {
+  return !!race.racers[id]?.finished;
+}
+export function allFinished(race) {
+  return Object.values(race.racers).every((r) => r.finished);
+}
+export function timedOut(race) {
+  return race.time >= race.maxTime;
+}
 
 // Seconds elapsed on the racer's current (in-progress) lap.
 export function currentLapTime(race, id) {
