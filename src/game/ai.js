@@ -14,7 +14,9 @@ export function aiInput(kart, waypoints, race, opts = {}) {
   let diff = desired - st.heading;
   while (diff > Math.PI) diff -= 2 * Math.PI;
   while (diff < -Math.PI) diff += 2 * Math.PI;
-  const steer = Math.max(-1, Math.min(1, diff * 2));
+  // physics applies `heading -= steer*rate`, so to rotate heading toward the
+  // target (by +diff) the steer command must be the negation of diff.
+  const steer = Math.max(-1, Math.min(1, -diff * 2));
   const throttle = Math.abs(diff) > 0.6 ? 0.6 : 1; // ease off in sharp turns
   return { steer, throttle, brake: 0, drift: Math.abs(diff) > 0.9, useItem: false, pause: false };
 }

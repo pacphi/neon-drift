@@ -1,7 +1,7 @@
 import { PHYSICS as P } from '../config.js';
 
 export function createKartState(pos = { x: 0, z: 0 }, heading = 0) {
-  return { pos: { ...pos }, vel: { x: 0, z: 0 }, heading, speed: 0 };
+  return { pos: { ...pos }, vel: { x: 0, z: 0 }, heading, speed: 0, steer: 0 };
 }
 
 // signed speed along the kart's heading
@@ -36,9 +36,20 @@ export function stepPhysics(s, input, dt, env = {}) {
   s.vel.x = fwd * fx + lat * fz;
   s.vel.z = fwd * fz - lat * fx;
 
-  // steering scales with speed (none at rest)
-  const speedFactor = Math.min(1, Math.abs(fwd) / 12);
-  s.heading += input.steer * P.steerRate * speedFactor * dt * Math.sign(fwd || 1);
+  // Smooth the steering input so a key tap ramps in progressively instead of
+  // snapping to full lock (kills the "too touchy" feel).
+  if (s.steer === undefined) s.steer = 0;
+  s.steer += (input.steer - s.steer) * Math.min(1, dt * P.steerResponse);
+
+  // A small floor (+3) keeps low-speed pivot responsive; authority is cut at high
+  // speed for stability. Sign negated so Left turns left; inverted in reverse.
+  const speedFactor = Math.min(1, (Math.abs(fwd) + 3) / 10);
+  const highSpeedCut = 1 - P.highSpeedSteerCut * Math.min(1, Math.abs(fwd) / P.maxSpeed);
+  const reverseDir = fwd < -0.5 ? -1 : 1;
+  s.heading -= s.steer * P.steerRate * speedFactor * highSpeedCut * dt * reverseDir;
+
+  // keep heading in [-PI, PI] so it never accumulates a large float
+  s.heading = Math.atan2(Math.sin(s.heading), Math.cos(s.heading));
 
   s.pos.x += s.vel.x * dt;
   s.pos.z += s.vel.z * dt;

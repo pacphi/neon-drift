@@ -15,7 +15,9 @@ const Scanline = {
 export function createComposer(renderer, scene, camera) {
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
-  const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 1.1, 0.7, 0.2);
+  // strength, radius, threshold: only genuinely bright neon edges should bloom —
+  // a low threshold blows the whole magenta sky to white.
+  const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.55, 0.5, 0.82);
   composer.addPass(bloom);
   composer.addPass(new ShaderPass(Scanline));
   addEventListener('resize', () => composer.setSize(innerWidth, innerHeight));

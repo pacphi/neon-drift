@@ -4,6 +4,9 @@ export function createScene(container) {
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  // tone mapping keeps the neon emissives bright without clipping the frame to white
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.0;
   container.appendChild(renderer.domElement);
   const scene = new THREE.Scene();
   scene.fog = new THREE.Fog(PALETTE.bg, 120, 420);
@@ -16,13 +19,22 @@ export function createScene(container) {
   });
   // chase camera: follows target {pos,heading} with smoothing
   const camPos = new THREE.Vector3();
+  let placed = false;
   function follow(target, dt) {
-    const back = 16, up = 7;
+    const back = 15, up = 8;
     const tx = target.pos.x - Math.sin(target.heading) * back;
     const tz = target.pos.z - Math.cos(target.heading) * back;
     camPos.set(tx, up, tz);
-    camera.position.lerp(camPos, Math.min(1, dt * 6));
-    camera.lookAt(target.pos.x, 2, target.pos.z);
+    // snap to position on the first frame so we never start at the origin looking at nothing
+    if (!placed) { camera.position.copy(camPos); placed = true; }
+    else camera.position.lerp(camPos, Math.min(1, dt * 6));
+    // aim well ahead of the kart so upcoming turns are visible early
+    camera.lookAt(
+      target.pos.x + Math.sin(target.heading) * 16,
+      1.5,
+      target.pos.z + Math.cos(target.heading) * 16,
+    );
   }
-  return { renderer, scene, camera, follow };
+  function resetCamera() { placed = false; }
+  return { renderer, scene, camera, follow, resetCamera };
 }

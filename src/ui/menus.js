@@ -10,7 +10,7 @@ const neonBtn = 'cursor:pointer;pointer-events:auto;background:transparent;borde
 export function titleScreen() {
   return new Promise(res => {
     const el = screen(`<h1 style="font-size:64px;color:#ff2bd6;text-shadow:0 0 18px #ff2bd6;letter-spacing:6px;">NEON DRIFT</h1>
-      <p style="color:#aaff00;">Arrows / WASD to steer · Space to drift · Shift to use item</p>
+      <p style="color:#aaff00;">Arrows / WASD to steer · Space to drift · Shift to use item · press L for controls</p>
       <button id="go" style="${neonBtn}">START</button>`);
     el.querySelector('#go').onclick = () => { el.remove(); res(); };
   });
@@ -18,7 +18,11 @@ export function titleScreen() {
 
 export function trackSelect() {
   return new Promise(res => {
-    const cards = TRACKS.map((t, i) => `<button class="tk" data-i="${i}" style="${neonBtn};border-color:#${t.color.toString(16).padStart(6,'0')};">${t.name}</button>`).join('');
+    const cards = TRACKS.map((t, i) =>
+      `<button class="tk" data-i="${i}" style="${neonBtn};border-color:#${t.color.toString(16).padStart(6, '0')};display:flex;flex-direction:column;gap:4px;">
+        <span>${t.name}</span>
+        <span style="font-size:13px;color:#aaff00;">${t.laps} LAPS</span>
+      </button>`).join('');
     const el = screen(`<h2 style="color:#18f0ff;font-size:40px;">SELECT TRACK</h2><div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;">${cards}</div>`);
     el.querySelectorAll('.tk').forEach(b => b.onclick = () => { el.remove(); res(Number(b.dataset.i)); });
   });
@@ -26,7 +30,13 @@ export function trackSelect() {
 
 export function resultsScreen(order) {
   return new Promise(res => {
-    const rows = order.map((r, i) => `<div style="font-size:24px;color:${i===0?'#aaff00':'#18f0ff'};">${i + 1}. ${r.name}${r.finishTime != null ? '  ' + r.finishTime.toFixed(1) + 's' : ''}</div>`).join('');
+    const rows = order.map((r, i) => {
+      const total = r.finishTime != null ? r.finishTime.toFixed(1) + 's' : 'DNF';
+      const best = r.bestLap != null ? `best ${r.bestLap.toFixed(1)}s` : '';
+      return `<div style="font-size:22px;color:${i === 0 ? '#aaff00' : '#18f0ff'};">
+        ${i + 1}. ${r.name} &nbsp; ${total} &nbsp; <span style="font-size:15px;color:#ff7b00;">${best}</span>
+      </div>`;
+    }).join('');
     const el = screen(`<h2 style="color:#ff2bd6;font-size:48px;">RESULTS</h2>${rows}<button id="again" style="${neonBtn}">RACE AGAIN</button>`);
     el.querySelector('#again').onclick = () => { el.remove(); res(); };
   });

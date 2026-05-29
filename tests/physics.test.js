@@ -35,14 +35,20 @@ describe('physics', () => {
     expect(forwardSpeed(off)).toBeLessThan(forwardSpeed(on));
   });
 
-  it('steering rotates heading only while moving', () => {
-    let s = createKartState({ x: 0, z: 0 });
-    const h0 = s.heading;
-    s = stepPhysics(s, { ...noInput, steer: 1 }, 0.1, { offTrack: false });
-    expect(s.heading).toBeCloseTo(h0); // no movement, no turn
-    s = stepPhysics(s, { ...noInput, throttle: 1 }, 0.2, { offTrack: false });
-    s = stepPhysics(s, { ...noInput, steer: 1, throttle: 1 }, 0.1, { offTrack: false });
-    expect(s.heading).not.toBeCloseTo(h0);
+  it('steer left and right rotate heading in opposite directions', () => {
+    const left = stepPhysics(createKartState({ x: 0, z: 0 }), { ...noInput, steer: -1 }, 0.1, { offTrack: false });
+    const right = stepPhysics(createKartState({ x: 0, z: 0 }), { ...noInput, steer: 1 }, 0.1, { offTrack: false });
+    expect(Math.sign(left.heading)).toBe(-Math.sign(right.heading));
+    expect(left.heading).not.toBe(0); // low-speed pivot is allowed (no longer stuck at rest)
+  });
+
+  it('steering authority increases with speed', () => {
+    const slow = stepPhysics(createKartState({ x: 0, z: 0 }), { ...noInput, steer: 1 }, 0.1, { offTrack: false });
+    let fast = createKartState({ x: 0, z: 0 });
+    for (let i = 0; i < 10; i++) fast = stepPhysics(fast, { ...noInput, throttle: 1 }, 0.1, { offTrack: false });
+    const before = fast.heading;
+    fast = stepPhysics(fast, { ...noInput, steer: 1, throttle: 1 }, 0.1, { offTrack: false });
+    expect(Math.abs(fast.heading - before)).toBeGreaterThan(Math.abs(slow.heading));
   });
 
   it('drift produces more lateral slide than gripping', () => {

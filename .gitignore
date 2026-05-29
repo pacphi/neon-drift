@@ -8,3 +8,7 @@ dist/
 .claude-flow/
 ruvector.db
 .claude/memory.db
+
+# playwright test artifacts
+.playwright-mcp/
+*.png

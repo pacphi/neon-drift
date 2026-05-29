@@ -48,6 +48,13 @@ export function computeTrackData(track, { waypointCount = 240, checkpointCount =
   const waypoints = sampleLoop(track.points, waypointCount);
   const halfWidth = track.width / 2;
 
+  // total centerline length (for race max-time estimation)
+  let length = 0;
+  for (let i = 0; i < waypoints.length; i++) {
+    const a = waypoints[i], b = waypoints[(i + 1) % waypoints.length];
+    length += Math.hypot(b.x - a.x, b.z - a.z);
+  }
+
   const checkpoints = [];
   for (let k = 0; k < checkpointCount; k++) {
     checkpoints.push(Math.floor((k / checkpointCount) * waypoints.length));
@@ -56,8 +63,8 @@ export function computeTrackData(track, { waypointCount = 240, checkpointCount =
   const s = waypoints[0];
   const startPositions = [];
   for (let i = 0; i < 4; i++) {
-    const off = (i % 2 ? 1 : -1) * 3;
-    const back = Math.floor(i / 2) * 6 + 4;
+    const off = (i % 2 ? 1 : -1) * 3.5;
+    const back = Math.floor(i / 2) * 8 + 7;
     startPositions.push({
       x: s.x - s.tx * back + s.tz * off,
       z: s.z - s.tz * back - s.tx * off,
@@ -65,5 +72,5 @@ export function computeTrackData(track, { waypointCount = 240, checkpointCount =
     });
   }
 
-  return { waypoints, checkpoints, startPositions, halfWidth };
+  return { waypoints, checkpoints, startPositions, halfWidth, length };
 }

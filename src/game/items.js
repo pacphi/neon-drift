@@ -1,6 +1,6 @@
 import { ITEMS } from '../config.js';
 
-const BOOST_DURATION = 2.5; // seconds
+const BOOST_DURATION = 3.5; // seconds
 const SHOCK_RADIUS = 18;
 
 export function createEffectState() {

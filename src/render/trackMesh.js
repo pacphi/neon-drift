@@ -4,7 +4,7 @@ import { computeTrackData } from '../game/track.js';
 
 // Builds ribbon mesh + glowing edge lines; returns { mesh, waypoints, checkpoints, startPositions, halfWidth }
 export function buildTrackMesh(track, { waypointCount = 240, checkpointCount = 12 } = {}) {
-  const { waypoints, checkpoints, startPositions, halfWidth } = computeTrackData(track, { waypointCount, checkpointCount });
+  const { waypoints, checkpoints, startPositions, halfWidth, length } = computeTrackData(track, { waypointCount, checkpointCount });
   const wp = waypoints;
   const hw = halfWidth;
   const verts = [], idx = [];
@@ -31,5 +31,5 @@ export function buildTrackMesh(track, { waypointCount = 240, checkpointCount = 1
     return new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: track.color }));
   };
   mesh.add(edge(hw)); mesh.add(edge(-hw));
-  return { mesh, waypoints, checkpoints, startPositions, halfWidth };
+  return { mesh, waypoints, checkpoints, startPositions, halfWidth, length };
 }
