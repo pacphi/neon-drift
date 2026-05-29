@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+
+# ruflo / claude-flow runtime artifacts
+.swarm/
+.claude-flow/
+ruvector.db
+.claude/memory.db
