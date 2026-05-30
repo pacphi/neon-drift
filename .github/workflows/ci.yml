@@ -36,13 +36,8 @@ jobs:
       - run: pnpm run build
 
   e2e:
-    name: E2E smoke (Firefox)
+    name: E2E smoke (Chromium)
     runs-on: ubuntu-latest
-    env:
-      # Force Mesa software rendering so headless Firefox can create a WebGL
-      # context on the GPU-less runner (paired with webgl.force-enabled pref).
-      LIBGL_ALWAYS_SOFTWARE: '1'
-      GALLIUM_DRIVER: llvmpipe
     steps:
       - uses: actions/checkout@v6
 
@@ -56,6 +51,6 @@ jobs:
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
-      - name: Install Firefox for Playwright
-        run: pnpm exec playwright install --with-deps firefox
+      - name: Install Chromium for Playwright
+        run: pnpm exec playwright install --with-deps chromium
       - run: pnpm run e2e

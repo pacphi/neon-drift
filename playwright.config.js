@@ -1,6 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 
-// Drives Firefox. Run `pnpm exec playwright install firefox` once to fetch the browser.
+// Drives Chromium. Run `pnpm exec playwright install chromium` once to fetch the browser.
+// Chromium ships SwiftShader, a software GL backend, so WebGL works on the GPU-less
+// CI runner — headless Firefox cannot reliably create a WebGL context there.
 export default defineConfig({
   testDir: './tests/e2e',
   webServer: {
@@ -10,15 +12,16 @@ export default defineConfig({
   },
   use: {
     baseURL: 'http://localhost:5173',
-    // Headless CI runners have no GPU; force-enable WebGL so Three.js can get a
-    // context via software rendering (Mesa llvmpipe) instead of throwing on boot.
+    // Force software WebGL via SwiftShader so THREE.WebGLRenderer can get a
+    // context on headless/GPU-less machines instead of throwing on boot.
     launchOptions: {
-      firefoxUserPrefs: {
-        'webgl.force-enabled': true,
-        'webgl.disabled': false,
-        'gfx.webrender.software': true,
-      },
+      args: [
+        '--use-gl=angle',
+        '--use-angle=swiftshader',
+        '--enable-unsafe-swiftshader',
+        '--ignore-gpu-blocklist',
+      ],
     },
   },
-  projects: [{ name: 'firefox', use: { ...devices['Desktop Firefox'] } }],
+  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
 });

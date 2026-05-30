@@ -99,7 +99,7 @@ pnpm preview            # serve the built bundle locally
 | ------------------------- | ------------------------------------------------------ |
 | `pnpm dev` / `pnpm build` | Vite dev server / production build                     |
 | `pnpm test`               | Vitest unit tests (physics, race/timing, items, track) |
-| `pnpm e2e`                | Playwright smoke test (Firefox)                        |
+| `pnpm e2e`                | Playwright smoke test (Chromium)                       |
 | `pnpm typecheck`          | TypeScript type-checks the JS (`checkJs`)              |
 | `pnpm lint` / `lint:fix`  | ESLint (flat config) — `:fix` autofixes                |
 | `pnpm format` / `:check`  | Prettier write / verify                                |
@@ -110,11 +110,11 @@ pnpm preview            # serve the built bundle locally
 | `pnpm deps:update`        | upgrade within semver ranges (compatible)              |
 | `pnpm deps:update:latest` | upgrade to latest (may cross majors)                   |
 
-The Playwright e2e drives **Firefox**; fetch it once with
-`pnpm exec playwright install firefox`.
+The Playwright e2e drives **Chromium** (its bundled SwiftShader gives WebGL on
+headless/GPU-less CI); fetch it once with `pnpm exec playwright install chromium`.
 
 CI (`.github/workflows/ci.yml`) runs the full `check` + `audit` + `build` plus a
-Firefox e2e job on Node 26 / pnpm. Dependabot keeps deps and Actions current.
+Chromium e2e job on Node 26 / pnpm. Dependabot keeps deps and Actions current.
 
 ### 🧱 Architecture
 
