@@ -8,6 +8,17 @@ export default defineConfig({
     port: 5173,
     reuseExistingServer: !process.env.CI,
   },
-  use: { baseURL: 'http://localhost:5173' },
+  use: {
+    baseURL: 'http://localhost:5173',
+    // Headless CI runners have no GPU; force-enable WebGL so Three.js can get a
+    // context via software rendering (Mesa llvmpipe) instead of throwing on boot.
+    launchOptions: {
+      firefoxUserPrefs: {
+        'webgl.force-enabled': true,
+        'webgl.disabled': false,
+        'gfx.webrender.software': true,
+      },
+    },
+  },
   projects: [{ name: 'firefox', use: { ...devices['Desktop Firefox'] } }],
 });

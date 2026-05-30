@@ -38,6 +38,11 @@ jobs:
   e2e:
     name: E2E smoke (Firefox)
     runs-on: ubuntu-latest
+    env:
+      # Force Mesa software rendering so headless Firefox can create a WebGL
+      # context on the GPU-less runner (paired with webgl.force-enabled pref).
+      LIBGL_ALWAYS_SOFTWARE: '1'
+      GALLIUM_DRIVER: llvmpipe
     steps:
       - uses: actions/checkout@v6
 
