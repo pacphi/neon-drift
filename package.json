@@ -31,12 +31,12 @@
     "fix": "pnpm run lint:fix && pnpm run format"
   },
   "dependencies": {
-    "three": "^0.184.0"
+    "three": "^0.185.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.60.0",
-    "@types/three": "^0.184.1",
+    "@types/three": "^0.185.1",
     "eslint": "^10.4.1",
     "globals": "^17.6.0",
     "prettier": "^3.8.3",
