@@ -15,6 +15,9 @@ test('boots and reaches a race without console errors', async ({ page }) => {
   await expect(page.getByText('SELECT TRACK')).toBeVisible();
   await page.locator('.tk').first().click();
   await page.waitForTimeout(1500); // race renders + countdown
-  await expect(page.locator('#lap')).toContainText('LAP');
+  // The HUD fills in only after the 3 s countdown. Under software WebGL (SwiftShader)
+  // on a CI runner, newer headless Chromium renders slowly enough that this takes
+  // ~8 s, so allow well beyond the default 5 s expect timeout.
+  await expect(page.locator('#lap')).toContainText('LAP', { timeout: 20_000 });
   expect(errors).toEqual([]);
 });
